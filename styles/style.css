@@ -1,0 +1,48 @@
+body {
+    background-color: #FF9500;
+    margin: 0px;
+    padding: 10px;
+}
+
+#canvasBox {
+    width: 100%;
+    float: left;
+}
+
+#buttonsBox {
+    position: absolute;
+    right: 5%;
+    bottom: 5%;
+    margin: 0px;
+    padding: 0px;
+    text-align: right;
+}
+
+.glyphicon {
+    vertical-align:middle;
+}
+
+#playButton .glyphicon {
+    color: green;
+}
+
+#nextButton .glyphicon {
+    color: blue;
+}
+
+#buttonsBox button {
+    font-size: 5em;
+    color: #ff9500;
+    background-color: white;
+    border: 2px solid white;
+    margin-top: 10px;
+    padding-top: 0px;
+}
+
+#buttonsBox button:hover {
+    border: 2px solid black;
+}
+
+#buttonsBox button:active {
+    border: 2px solid black;
+}
