@@ -38,6 +38,7 @@ var WordPlayer = function() {
                         console.log('Erreur de voix synthétisée: '+answer.res);
                 } catch (e) {
                     console.log("Erreur lors de la génération de la voix synthétisée: ",e);
+                    console.log("Réponse: ",data);
                 }
             });
         }
