@@ -8,13 +8,14 @@
     <body>
         <div id="canvasBox">
         </div>
-        <audio autoplay>
+        <audio id="audioPlayer" autoplay>
             <source id="mp3Source" type="audio/mpeg">
         </audio/>
 
         <script src="scripts/lib/jquery-2.0.3.min.js"></script>
         <script src="scripts/lib/underscore-min.js"></script>
         <script src="scripts/lib/kinetic-v4.7.4.min.js"></script>
+        <script src="scripts/lib/tocca.min.js"></script>
         <!-- configuration -->
         <script src="scripts/configuration.js"></script>
         <!-- le lecteur de son acapela -->
@@ -25,5 +26,12 @@
         <script src="scripts/keyboard.js"></script>
         <!-- l'application principale -->
         <script src="scripts/words.js"></script>
+        <script>
+            // sur tablettes, une action de l'utilisateur est
+            // obligatoire pour jouer un son
+            $('#canvasBox').on('tap', function() {
+                document.getElementById('audioPlayer').play();
+            });
+        </script>
     </body>
 </html>

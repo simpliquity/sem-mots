@@ -25,12 +25,26 @@ var WriteArea = function(bgLayer,layer,dimensions) {
         height: dimensions.size.height,
         cornerRadius:30,
         fill: 'white',
-        stroke: 'black',
-        strokeWidth: 0
+        stroke: 'white',
+        strokeWidth:10 
     });
     bgLayer.add(background);
     layer.add(letters);
     layer.draw();
+
+    player.onStatusChange(function(status) {
+        switch(status.status) {
+            case 'loading':
+                background.setStroke('white');
+                break;
+            case 'ready':
+                background.setStroke('green');
+                break;
+            default:
+                background.setStroke('red');
+        }
+        bgLayer.draw();
+    });
 
     // lit le mot écrit (ordre des lettres)
     // et le retourne (String)
