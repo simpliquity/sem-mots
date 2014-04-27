@@ -9,7 +9,7 @@ var WordPlayer = function() {
         // lecteur audio sur la page html
         var source = $(wordsConfig.mp3SourceId);
         source.attr('src',url).appendTo(source.parent());
-        document.getElementById(audioPlayerId).play();
+        document.getElementById(wordsConfig.audioPlayerId).play();
     };
 
     // lit le mot passé en paramètre
