@@ -8,8 +8,10 @@ var WordPlayer = function() {
     var playSound = function(url) {
         // lecteur audio sur la page html
         var source = $(wordsConfig.mp3SourceId);
-        source.attr('src',url).appendTo(source.parent());
-        document.getElementById(wordsConfig.audioPlayerId).play();
+        var player = $('#'+wordsConfig.audioPlayerId).get(0)
+        source.attr('src',url).detach().appendTo(player);
+        player.load()
+        player.play()
     };
 
     // lit le mot passé en paramètre
@@ -41,8 +43,9 @@ var WordPlayer = function() {
                         playSound(url);
                         listeners.fire({status:'ready'});
                         return;
-                    } else
+                    } else {
                         console.log('Erreur de voix synthétisée: '+answer.res);
+                    }
                 } catch (e) {
                     console.log("Erreur lors de la génération de la voix synthétisée: ",e);
                     console.log("Réponse: ",data);
