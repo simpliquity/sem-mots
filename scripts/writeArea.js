@@ -1,6 +1,16 @@
-var WriteArea = function(bgLayer, layer, dimensions, keyboard) {
+// options:
+// - backgroundLayer
+// - writeLayer
+// - dimensions
+// - keyboard
+// - wordPlayer
+var WriteArea = function(options) {
     // synthétiseur de voix
-    var player = WordPlayer();
+    var bgLayer = options.backgroundLayer
+    var layer = options.writeLayer;
+    var dimensions = options.dimensions;
+    var keyboard = options.keyboard;
+    var player = options.wordPlayer;
     var letters = new Kinetic.Group({
         x: 0,
         y: 0,
@@ -10,6 +20,7 @@ var WriteArea = function(bgLayer, layer, dimensions, keyboard) {
     var lettersPadding = 10;
     var keySize = 100;
 
+    // crée la grille d'écriture (affichage + structure de données)
     (function init() {
         var keySize = keyboard.getKeySize()
         var lineLen = Math.floor(dimensions.size.width / (keySize+lettersPadding));
@@ -54,10 +65,13 @@ var WriteArea = function(bgLayer, layer, dimensions, keyboard) {
                 memo.push(' ');
             }
             return memo;
-        }, []).join('');
+        }, []);
+        if (_.last(word) === ' ') {
+            word = _.first(word, -1);
+        }
         // "dit" le mot
-        //player.play(word);
-        console.log("word", word);
+        player.play(word.join(''));
+        console.log("word", word.join(''));
         return word;
     };
 
@@ -72,12 +86,14 @@ var WriteArea = function(bgLayer, layer, dimensions, keyboard) {
         ], _.identity);
     };
 
+    // positionne une lettre sur la grille
+    // remplace la lettre s'il y en a déjà une
     var snapToGrid = function(letter) {
         var letterPos = letter.getPosition();
         var offset = keySize/2;
         var pos = {
-            x: letterPos.x, // + (keySize + lettersPadding)/2,
-            y: letterPos.y //+ (keySize + lettersPadding)/2
+            x: letterPos.x,
+            y: letterPos.y
         };
         var data = _.reduce(lettersData, function(memo,data) {
             if (pos.x+offset >= data.pos.x && pos.y+offset >= data.pos.y)
@@ -147,103 +163,6 @@ var WriteArea = function(bgLayer, layer, dimensions, keyboard) {
                     layer.draw();
                     updateWord();
                 }
-            }
-        },
-        getWord: function() {
-            return updateWord();
-        }
-    };
-};
-
-var WriteArea2 = function(bgLayer,layer,dimensions) {
-    // synthétiseur de voix
-    var player = WordPlayer();
-    var letters = new Kinetic.Group({
-        x:0,
-        y:0,
-        draggable: false
-    });
-
-    // contrôle si une lettre est dans la zone d'écriture
-    var isLetterInArea = function(letter) {
-        var letterPos = letter.getPosition();
-        return _.every([
-            letterPos.x >= dimensions.pos.x,
-            letterPos.y >= dimensions.pos.y,
-            letterPos.x < dimensions.pos.x+dimensions.size.width,
-            letterPos.y < dimensions.pos.y+dimensions.size.height
-        ], _.identity);
-    };
-
-    var background = new Kinetic.Rect({
-        x: dimensions.pos.x,
-        y: dimensions.pos.y,
-        width: dimensions.size.width,
-        height: dimensions.size.height,
-        cornerRadius:30,
-        fill: 'white',
-        stroke: 'white',
-        strokeWidth:10 
-    });
-    bgLayer.add(background);
-    layer.add(letters);
-    layer.draw();
-
-    player.onStatusChange(function(status) {
-        switch(status.status) {
-            case 'loading':
-                background.setStroke('white');
-                break;
-            case 'ready':
-                background.setStroke('green');
-                break;
-            default:
-                background.setStroke('red');
-        }
-        bgLayer.draw();
-    });
-
-    // lit le mot écrit (ordre des lettres)
-    // et le retourne (String)
-    var updateWord = function() {
-        var children = letters.getChildren();
-        // ordre basé sur la position horizontale
-        var sortedLetters = _.sortBy(children, function(letter) {
-            return letter.getPosition().x;
-        });
-        // construit le mot en prenant les lettres l'une après l'autre
-        var word = _.reduce(sortedLetters, function(word,letter) {
-            return word + letter.name;
-        }, '');
-        // "dit" le mot
-        player.play(word);
-        return word;
-    };
-
-    // appelé quand une lettre est déplacée
-    var letterMoved = function(e) {
-        letter = e.targetNode.getParent();
-        if (!isLetterInArea(letter)) {
-            // plus dans la zone d'écriture: on l'efface
-            letter.remove();
-            layer.draw();
-        }
-        updateWord();
-    };
-
-    return {
-        // ajoute une lettre à cette zone d'écriture
-        addLetter: function(letter) {
-            // contrôle si la lettre est bien dans la zone
-            if (isLetterInArea(letter)) {
-                // on réagit aux mouvements de lettres (nouveau mot)
-                letter.on('dragend',letterMoved);
-                letters.add(letter);
-                // on place la lettre en dessus de toutes les autres
-                // pour être sûr de la voir
-                letter.moveToTop();
-                layer.draw();
-                updateWord();
             }
         },
         getWord: function() {

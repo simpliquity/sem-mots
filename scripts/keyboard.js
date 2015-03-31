@@ -1,7 +1,7 @@
 /*
  * Clavier tactile.
  */
-var Keyboard = function(layer,dimensions) {
+var Keyboard = function(layer,dimensions,player) {
     // liste de listeners pour les événements du clavier
     var typeListeners = $.Callbacks();
     var kb = new Kinetic.Group({
@@ -44,6 +44,12 @@ var Keyboard = function(layer,dimensions) {
         keys[key.name] = clone;
     };
 
+    var keyClick = function(e) {
+        console.log("Key clicked", e);
+        var key = e.targetNode.getParent();
+        player.play(""+key.name);
+    };
+
     var createEmptyKey = function(name, pos, size) {
         // background
         var bg = new Kinetic.Rect({
@@ -81,6 +87,7 @@ var Keyboard = function(layer,dimensions) {
         key.originalPos = _.clone(pos);
         key.add(txt);
         key.on('dragstart',keyDragStart);
+        key.on('click', keyClick);
         return key;
     };
 

@@ -57,13 +57,16 @@ var wordsApp = (function() {
     var keyboardLayer = new Kinetic.Layer();
     var keyboard = null;
 
+    var wordPlayer = null;
+
     var onLetterTyped = function(letter) {
         // on ajoute simplement la lettre à la zone d'écriture
         writeArea.addLetter(letter);
     };
 
     var init = function() {
-        keyboard = Keyboard(keyboardLayer,keyboardDim);
+        wordPlayer = WordPlayer();
+        keyboard = Keyboard(keyboardLayer,keyboardDim,wordPlayer);
         keys = [
             ["a","b","c","d","e","f","g","h","i"],
             ["j","k","l","m","n","o","p","q"],
@@ -71,7 +74,13 @@ var wordsApp = (function() {
         ]
         keyboard.setKeys(keys);
         keyboard.onLetterTyped(onLetterTyped);
-        writeArea = WriteArea(backgroundLayer,writeLayer,writeAreaDim,keyboard);
+        writeArea = WriteArea({
+            backgroundLayer: backgroundLayer,
+            writeLayer: writeLayer,
+            dimensions: writeAreaDim,
+            keyboard: keyboard,
+            wordPlayer: wordPlayer
+        });
 
         stage.add(backgroundLayer);
         stage.add(keyboardLayer);

@@ -14,10 +14,26 @@ var WordPlayer = function() {
         player.play()
     };
 
+    var playLetter = function(letter) {
+        if (!(letter && letter!=="")) return;
+        var car = _.first(letter.toLowerCase());
+        // l'addresse du fichier son (l'option v= est utile pour
+        // forcer le navigateur à mettre à jour le cache (simplement
+        // changer la valeur si un son à été mis-à-jour)
+        var url = "sounds/letters/"+car+".mp3?v=2";
+        playSound(url);
+    };
+
+
     // lit le mot passé en paramètre
     var playWord = function(word) {
         // ne fait rien si le mot est vide
         if (!(word && word!=="")) return;
+        // lit une lettre uniquement
+        if (_.size(word) === 1) {
+            playLetter(_.first(word));
+            return;
+        }
         listeners.fire({status:'loading'});
         // contrôle si le mot est dans le cache
         if (cache[word]) {
