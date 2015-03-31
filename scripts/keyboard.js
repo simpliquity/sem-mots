@@ -45,7 +45,6 @@ var Keyboard = function(layer,dimensions,player) {
     };
 
     var keyClick = function(e) {
-        console.log("Key clicked", e);
         var key = e.targetNode.getParent();
         player.play(""+key.name);
     };
@@ -88,6 +87,7 @@ var Keyboard = function(layer,dimensions,player) {
         key.add(txt);
         key.on('dragstart',keyDragStart);
         key.on('click', keyClick);
+        key.on('tap', keyClick);
         return key;
     };
 
