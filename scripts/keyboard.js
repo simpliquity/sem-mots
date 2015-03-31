@@ -9,11 +9,12 @@ var Keyboard = function(layer,dimensions) {
         y: 0
     });
     var keys = {};
+    var keySize;
     layer.add(kb);
 
     // appelée lorsqu'une touche a été déplacée
     var keyDragEnd = function(e) {
-        var key = e.targetNode.getParent();
+        var key = e.dragEndNode;//targetNode.getParent();
         key.off('dragend');
         // on enlève la touche du clavier
         key.remove();
@@ -29,16 +30,13 @@ var Keyboard = function(layer,dimensions) {
     // un clavier complet.
     var keyDragStart = function(e) {
         var key = e.targetNode.getParent();
-        var clone = key.clone();
         // on arrête d'écouter le début d'un déplacemetn
         key.off('dragstart');
         // on s'intéresse à la fin du déplacement (écriture de la lettre)
         key.on('dragend',keyDragEnd);
         // on clone la lettre déplacée pour la remplacer dans le clavier
+        clone = createKey(key.name, key.originalPos, keySize);
         clone.on('dragstart',keyDragStart);
-        clone.setPosition(key.originalPos.x,key.originalPos.y);
-        clone.name = key.name;
-        clone.originalPos = key.originalPos;
         // on ajoute le clone au clavier
         kb.add(clone);
         key.moveToTop();
@@ -46,19 +44,7 @@ var Keyboard = function(layer,dimensions) {
         keys[key.name] = clone;
     };
 
-    // création d'une touche de clavier
-    var createKey = function(name,pos,size) {
-        // le caractère
-        var txt = new Kinetic.Text({
-            fontSize: 32,
-            text: name,
-            fill: 'black',
-            align: 'center',
-            padding: 5 
-        });
-        txt.setWidth(txt.getHeight());
-        var txtScale = size/txt.getHeight();
-        txt.setScale(txtScale);
+    var createEmptyKey = function(name, pos, size) {
         // background
         var bg = new Kinetic.Rect({
             width: size,
@@ -74,8 +60,25 @@ var Keyboard = function(layer,dimensions) {
             draggable: true
         });
         key.name = name;
-        key.originalPos = _.clone(pos);
         key.add(bg);
+        return key;
+    };
+
+    // création d'une touche de clavier
+    var createKey = function(name,pos,size) {
+        // le caractère
+        var txt = new Kinetic.Text({
+            fontSize: 32,
+            text: name,
+            fill: 'black',
+            align: 'center',
+            padding: 5 
+        });
+        txt.setWidth(txt.getHeight());
+        var txtScale = size/txt.getHeight();
+        txt.setScale(txtScale);
+        key = createEmptyKey(name,pos,size);
+        key.originalPos = _.clone(pos);
         key.add(txt);
         key.on('dragstart',keyDragStart);
         return key;
@@ -94,7 +97,7 @@ var Keyboard = function(layer,dimensions) {
             // hauteur max d'une lettre (fonction de la taille du clavier)
             var maxKeyHeight = (dimensions.size.height-rowOffset*(_.size(lines)-1)) / _.size(lines);
             // taille d'une touche min. des deux valeurs précédentes
-            var keySize = Math.min(maxKeyWidth,maxKeyHeight);
+            keySize = Math.min(maxKeyWidth,maxKeyHeight);
             var currentPos = {
                 x: dimensions.pos.x,
                 y: dimensions.pos.y
@@ -117,6 +120,12 @@ var Keyboard = function(layer,dimensions) {
         // pour être informé lorsqu'une touche est "tapée"
         onLetterTyped: function(callback) {
             typeListeners.add(callback);
+        },
+        getKeySize: function() {
+            return keySize;
+        },
+        getEmptyKey: function(name, pos) {
+            return createEmptyKey(name, pos, keySize);
         }
     };
 };

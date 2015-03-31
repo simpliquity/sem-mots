@@ -13,9 +13,9 @@ var wordsApp = (function() {
     var writeAreaDim = (function() {
         var border = 10;
         // position (relative au sommet de la page)
-        var relTopOffset = 0.1;
+        var relTopOffset = 0.05;
         // hauteur (relative à la hauteur de la page)
-        var relHeight = 0.3;
+        var relHeight = 0.5;
         return {
             pos: {
                 x: border,
@@ -24,7 +24,8 @@ var wordsApp = (function() {
             size: {
                 width: size.width - 2*border,
                 height: size.height * relHeight
-            }
+            },
+            lettersPerLine: wordsConfig.lettersPerLine
         };
     })();
     // dimensions et position du clavier
@@ -51,10 +52,10 @@ var wordsApp = (function() {
         height: size.height
     });
     var backgroundLayer = new Kinetic.Layer();
-    var keyboardLayer = new Kinetic.Layer();
-    var keyboard = null;
     var writeLayer = new Kinetic.Layer();
     var writeArea = null;
+    var keyboardLayer = new Kinetic.Layer();
+    var keyboard = null;
 
     var onLetterTyped = function(letter) {
         // on ajoute simplement la lettre à la zone d'écriture
@@ -62,18 +63,23 @@ var wordsApp = (function() {
     };
 
     var init = function() {
-        // charge la configuration du clavier
-        config = $.getJSON('scripts/keyboard.json', function(json) {
-            // création et configuration du clavier
-            keyboard = Keyboard(keyboardLayer,keyboardDim);
-            keyboard.setKeys(json.keys);
-            keyboard.onLetterTyped(onLetterTyped);
-        });
-        // création de la zone d'écriture
-        writeArea = WriteArea(backgroundLayer,writeLayer,writeAreaDim);
+        keyboard = Keyboard(keyboardLayer,keyboardDim);
+        keys = [
+            ["a","b","c","d","e","f","g","h","i"],
+            ["j","k","l","m","n","o","p","q"],
+            ["r","s","t","u","v","w","x","y","z"]
+        ]
+        keyboard.setKeys(keys);
+        keyboard.onLetterTyped(onLetterTyped);
+        writeArea = WriteArea(backgroundLayer,writeLayer,writeAreaDim,keyboard);
+
         stage.add(backgroundLayer);
         stage.add(keyboardLayer);
         stage.add(writeLayer);
+
+        backgroundLayer.setZIndex(0);
+        writeLayer.setZIndex(1);
+        keyboardLayer.setZIndex(2);
     };
 
     return {
